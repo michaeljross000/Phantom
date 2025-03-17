@@ -1,6 +1,3 @@
-Got it! I’ll keep your exact words and tone while improving the structure and readability. Here's the revised version:
-
----
 
 # Phantom  
 
