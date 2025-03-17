@@ -18,7 +18,6 @@ namespace Phantom
 
         public static string GenerateXorBatchScript(string input, Random rng)
         {
-            return input;
             // Encode the input string to Base64
             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(input));
 

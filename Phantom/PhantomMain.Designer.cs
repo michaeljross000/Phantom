@@ -58,25 +58,28 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(14, 22);
+            this.label1.Location = new System.Drawing.Point(7, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 29);
+            this.label1.Size = new System.Drawing.Size(57, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "File path:";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(19, 56);
+            this.textBox1.Location = new System.Drawing.Point(10, 28);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(748, 31);
+            this.textBox1.Size = new System.Drawing.Size(376, 20);
             this.textBox1.TabIndex = 1;
             // 
             // openButton
             // 
             this.openButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.openButton.Location = new System.Drawing.Point(776, 54);
+            this.openButton.Location = new System.Drawing.Point(388, 27);
+            this.openButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.openButton.Name = "openButton";
-            this.openButton.Size = new System.Drawing.Size(120, 40);
+            this.openButton.Size = new System.Drawing.Size(60, 20);
             this.openButton.TabIndex = 2;
             this.openButton.Text = "...";
             this.openButton.UseVisualStyleBackColor = true;
@@ -86,18 +89,20 @@
             // 
             this.antiDebug.AutoSize = true;
             this.antiDebug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.antiDebug.Location = new System.Drawing.Point(6, 6);
+            this.antiDebug.Location = new System.Drawing.Point(3, 3);
+            this.antiDebug.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.antiDebug.Name = "antiDebug";
-            this.antiDebug.Size = new System.Drawing.Size(163, 33);
+            this.antiDebug.Size = new System.Drawing.Size(86, 19);
             this.antiDebug.TabIndex = 6;
             this.antiDebug.Text = "Anti Debug";
             this.antiDebug.UseVisualStyleBackColor = true;
             // 
             // buildButton
             // 
-            this.buildButton.Location = new System.Drawing.Point(18, 574);
+            this.buildButton.Location = new System.Drawing.Point(9, 287);
+            this.buildButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buildButton.Name = "buildButton";
-            this.buildButton.Size = new System.Drawing.Size(880, 77);
+            this.buildButton.Size = new System.Drawing.Size(440, 38);
             this.buildButton.TabIndex = 7;
             this.buildButton.Text = "Build";
             this.buildButton.UseVisualStyleBackColor = true;
@@ -107,9 +112,10 @@
             // 
             this.selfDelete.AutoSize = true;
             this.selfDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.selfDelete.Location = new System.Drawing.Point(6, 90);
+            this.selfDelete.Location = new System.Drawing.Point(3, 45);
+            this.selfDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.selfDelete.Name = "selfDelete";
-            this.selfDelete.Size = new System.Drawing.Size(129, 33);
+            this.selfDelete.Size = new System.Drawing.Size(69, 19);
             this.selfDelete.TabIndex = 8;
             this.selfDelete.Text = "Melt file";
             this.selfDelete.UseVisualStyleBackColor = true;
@@ -118,9 +124,10 @@
             // 
             this.hidden.AutoSize = true;
             this.hidden.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hidden.Location = new System.Drawing.Point(6, 129);
+            this.hidden.Location = new System.Drawing.Point(3, 64);
+            this.hidden.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.hidden.Name = "hidden";
-            this.hidden.Size = new System.Drawing.Size(187, 33);
+            this.hidden.Size = new System.Drawing.Size(98, 19);
             this.hidden.TabIndex = 9;
             this.hidden.Text = "Hide console";
             this.hidden.UseVisualStyleBackColor = true;
@@ -129,9 +136,10 @@
             // 
             this.antiVM.AutoSize = true;
             this.antiVM.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.antiVM.Location = new System.Drawing.Point(6, 48);
+            this.antiVM.Location = new System.Drawing.Point(3, 24);
+            this.antiVM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.antiVM.Name = "antiVM";
-            this.antiVM.Size = new System.Drawing.Size(126, 33);
+            this.antiVM.Size = new System.Drawing.Size(67, 19);
             this.antiVM.TabIndex = 10;
             this.antiVM.Text = "Anti VM";
             this.antiVM.UseVisualStyleBackColor = true;
@@ -142,10 +150,11 @@
             this.tabControl1.Controls.Add(this.binderPage);
             this.tabControl1.Controls.Add(this.outputPage);
             this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabControl1.Location = new System.Drawing.Point(19, 104);
+            this.tabControl1.Location = new System.Drawing.Point(10, 52);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(877, 464);
+            this.tabControl1.Size = new System.Drawing.Size(438, 232);
             this.tabControl1.TabIndex = 11;
             // 
             // optionsPage
@@ -157,10 +166,11 @@
             this.optionsPage.Controls.Add(this.selfDelete);
             this.optionsPage.Controls.Add(this.antiDebug);
             this.optionsPage.Controls.Add(this.antiVM);
-            this.optionsPage.Location = new System.Drawing.Point(8, 40);
+            this.optionsPage.Location = new System.Drawing.Point(4, 22);
+            this.optionsPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.optionsPage.Name = "optionsPage";
-            this.optionsPage.Padding = new System.Windows.Forms.Padding(3);
-            this.optionsPage.Size = new System.Drawing.Size(861, 416);
+            this.optionsPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.optionsPage.Size = new System.Drawing.Size(430, 206);
             this.optionsPage.TabIndex = 0;
             this.optionsPage.Text = "Options";
             this.optionsPage.UseVisualStyleBackColor = true;
@@ -169,9 +179,10 @@
             // 
             this.uacBypass.AutoSize = true;
             this.uacBypass.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.uacBypass.Location = new System.Drawing.Point(6, 249);
+            this.uacBypass.Location = new System.Drawing.Point(3, 124);
+            this.uacBypass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.uacBypass.Name = "uacBypass";
-            this.uacBypass.Size = new System.Drawing.Size(178, 33);
+            this.uacBypass.Size = new System.Drawing.Size(92, 19);
             this.uacBypass.TabIndex = 13;
             this.uacBypass.Text = "UAC Bypass";
             this.uacBypass.UseVisualStyleBackColor = true;
@@ -181,9 +192,10 @@
             // 
             this.startup.AutoSize = true;
             this.startup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startup.Location = new System.Drawing.Point(6, 210);
+            this.startup.Location = new System.Drawing.Point(3, 105);
+            this.startup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.startup.Name = "startup";
-            this.startup.Size = new System.Drawing.Size(121, 33);
+            this.startup.Size = new System.Drawing.Size(65, 19);
             this.startup.TabIndex = 12;
             this.startup.Text = "Startup";
             this.startup.UseVisualStyleBackColor = true;
@@ -193,9 +205,10 @@
             // 
             this.runas.AutoSize = true;
             this.runas.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.runas.Location = new System.Drawing.Point(6, 171);
+            this.runas.Location = new System.Drawing.Point(3, 86);
+            this.runas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.runas.Name = "runas";
-            this.runas.Size = new System.Drawing.Size(191, 33);
+            this.runas.Size = new System.Drawing.Size(103, 19);
             this.runas.TabIndex = 11;
             this.runas.Text = "Run as admin";
             this.runas.UseVisualStyleBackColor = true;
@@ -205,19 +218,21 @@
             this.binderPage.Controls.Add(this.removeFile);
             this.binderPage.Controls.Add(this.addFile);
             this.binderPage.Controls.Add(this.listBox1);
-            this.binderPage.Location = new System.Drawing.Point(8, 40);
+            this.binderPage.Location = new System.Drawing.Point(4, 22);
+            this.binderPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.binderPage.Name = "binderPage";
-            this.binderPage.Padding = new System.Windows.Forms.Padding(3);
-            this.binderPage.Size = new System.Drawing.Size(861, 416);
+            this.binderPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.binderPage.Size = new System.Drawing.Size(430, 206);
             this.binderPage.TabIndex = 2;
             this.binderPage.Text = "Binder";
             this.binderPage.UseVisualStyleBackColor = true;
             // 
             // removeFile
             // 
-            this.removeFile.Location = new System.Drawing.Point(195, 354);
+            this.removeFile.Location = new System.Drawing.Point(98, 177);
+            this.removeFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.removeFile.Name = "removeFile";
-            this.removeFile.Size = new System.Drawing.Size(186, 54);
+            this.removeFile.Size = new System.Drawing.Size(93, 27);
             this.removeFile.TabIndex = 2;
             this.removeFile.Text = "Remove file";
             this.removeFile.UseVisualStyleBackColor = true;
@@ -225,9 +240,10 @@
             // 
             // addFile
             // 
-            this.addFile.Location = new System.Drawing.Point(3, 354);
+            this.addFile.Location = new System.Drawing.Point(2, 177);
+            this.addFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.addFile.Name = "addFile";
-            this.addFile.Size = new System.Drawing.Size(186, 54);
+            this.addFile.Size = new System.Drawing.Size(93, 27);
             this.addFile.TabIndex = 1;
             this.addFile.Text = "Add file";
             this.addFile.UseVisualStyleBackColor = true;
@@ -236,19 +252,20 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 26;
-            this.listBox1.Location = new System.Drawing.Point(3, 8);
+            this.listBox1.Location = new System.Drawing.Point(2, 4);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(849, 316);
+            this.listBox1.Size = new System.Drawing.Size(426, 160);
             this.listBox1.TabIndex = 0;
             // 
             // outputPage
             // 
             this.outputPage.Controls.Add(this.listBox2);
-            this.outputPage.Location = new System.Drawing.Point(8, 40);
+            this.outputPage.Location = new System.Drawing.Point(4, 22);
+            this.outputPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.outputPage.Name = "outputPage";
-            this.outputPage.Padding = new System.Windows.Forms.Padding(3);
-            this.outputPage.Size = new System.Drawing.Size(861, 416);
+            this.outputPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.outputPage.Size = new System.Drawing.Size(430, 206);
             this.outputPage.TabIndex = 3;
             this.outputPage.Text = "Output";
             this.outputPage.UseVisualStyleBackColor = true;
@@ -256,17 +273,17 @@
             // listBox2
             // 
             this.listBox2.FormattingEnabled = true;
-            this.listBox2.ItemHeight = 26;
-            this.listBox2.Location = new System.Drawing.Point(6, 6);
+            this.listBox2.Location = new System.Drawing.Point(3, 3);
+            this.listBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(849, 368);
+            this.listBox2.Size = new System.Drawing.Size(426, 186);
             this.listBox2.TabIndex = 4;
             // 
             // PhantomMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(914, 669);
+            this.ClientSize = new System.Drawing.Size(457, 334);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.buildButton);
             this.Controls.Add(this.openButton);
@@ -275,6 +292,7 @@
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.Name = "PhantomMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

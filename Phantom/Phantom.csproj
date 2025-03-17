@@ -56,7 +56,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ghost_icon_838x1024_08e6wfgk_yMY_icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
@@ -265,7 +266,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ghost_icon_838x1024_08e6wfgk_yMY_icon.ico" />
     <EmbeddedResource Include="Resources\UAC.dll" />
     <EmbeddedResource Include="Resources\UAC64.dll" />
     <EmbeddedResource Include="Resources\donut.exe" />
